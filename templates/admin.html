@@ -1,0 +1,51 @@
+<!doctype html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta http-equiv="Content-Type" content="text/html; charset = UTF-8" />
+  <title>NL Bubble Console</title>
+  <style>
+    body {
+      overflow: hidden;
+      background-color: #f0f0f8;
+      user-select: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -o-user-select: none;
+      -ms-user-select: none;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="canvas"></div>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+  <script src="/static/box2d/protoclass.js"></script>
+  <script src='/static/box2d/box2d.js'></script>
+  <script src='/static/box2d/Main.js'></script>
+  <script src="https://www.gstatic.com/firebasejs/4.3.0/firebase.js"></script>
+  <script>
+    // Initialize Firebase
+    var config = {
+      databaseURL: "https://{{ app_id }}.firebaseio.com"
+    };
+    firebase.initializeApp(config);
+    var database = firebase.database();
+    var bubblesRef = firebase.database().ref('bubbles');
+    bubblesRef.on('child_added', function(snapshot) {
+      var bubble = snapshot.val();
+      var s = bubble.message;
+      s = s.length > 30 ? s.substr(0, 29) + '…' : s;
+      if (bubble.score < 0.0) bubble.message = '!';
+      createBall(s, 10 + (bubble.score+1.0) * 60, bubble.team);
+      if (bodies.length > 100) {
+        for (var i = 0; i < bodies.length - 100; i++) {
+          removeOldBall();
+        }
+      }
+    });
+  </script>
+</body>
+
+</html>

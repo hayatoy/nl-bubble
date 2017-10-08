@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <title>NL Bubble</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
+</head>
+
+<body class="mdl-demo mdl-color--grey-100 mdl-color-text--grey-700 mdl-base">
+  <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+    <header class="mdl-layout__header">
+      <div class="mdl-layout__header-row">
+        <span class="mdl-layout-title">NL Bubble</span>
+        <div class="mdl-layout-spacer"></div>
+        <nav class="mdl-navigation mdl-layout--large-screen-only">
+        </nav>
+      </div>
+    </header>
+    <main class="mdl-layout__content">
+      <div class="mdl-layout__tab-panel is-active" id="overview">
+        <section class="section--center mdl-grid" style="background:#fafafa;">
+          <div class="mdl-card mdl-cell mdl-cell--12-col" style="background:#fafafa;min-height:100px;">
+            <h2>bit.ly/nl-bubble</h2>
+          </div>
+        </section>
+        <section class="section--center mdl-grid">
+          <div class="mdl-card mdl-cell mdl-cell--6-col mdl-shadow--2dp">
+            <div class="mdl-card__supporting-text">
+              <h5>1. チームを選択してください</h5>
+              <h5>2. ポジティブな文章を書いてください</h5>
+              <h5>3. SEND!</h5>
+            </div>
+          </div>
+          <form id="form" class="mdl-card mdl-cell mdl-cell--6-col mdl-shadow--2dp">
+            <div class="mdl-card__supporting-text">
+              <div class="mdl-grid">
+                <div class="mdl-cell mdl-cell--6-col">
+                  <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="team-a">
+                                    <input type="radio" id="team-a" class="mdl-radio__button" name="team"
+                                           value="A" />
+                                    <span class="mdl-radio__label">Team A</span>
+                                </label>
+                </div>
+                <div class="mdl-cell mdl-cell--6-col">
+                  <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="team-b">
+                                    <input type="radio" id="team-b" class="mdl-radio__button" name="team"
+                                           value="B" />
+                                    <span class="mdl-radio__label">Team B</span>
+                                </label>
+                </div>
+              </div>
+              <div class="mdl-grid">
+                <div class="mdl-cell mdl-cell--12-col">
+                  <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                    <input class="mdl-textfield__input" type="text" id="message" name="message">
+                    <label class="mdl-textfield__label" for="message">Write something positive..</label>
+                  </div>
+                </div>
+              </div>
+              <div class="mdl-grid">
+                <div class="mdl-cell mdl-cell--12-col">
+                  <input type="submit" id="btn-send" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" value="SEND!" disabled/>
+                </div>
+              </div>
+            </div>
+            <div id="pr" class="mdl-progress mdl-js-progress mdl-progress__indeterminate" style="width:100%;display:none;"></div>
+          </form>
+        </section>
+        <section class="section--footer mdl-color--white mdl-grid"></section>
+      </div>
+      <div id="snackbar" class="mdl-js-snackbar mdl-snackbar">
+        <div class="mdl-snackbar__text"></div>
+        <button class="mdl-snackbar__action" type="button"></button>
+      </div>
+      <footer class="mdl-mini-footer">
+        <div class="mdl-mini-footer__left-section">
+          <div class="mdl-logo">Written by <a href="https://github.com/hayatoy">Hayato Yoshikawa</a></div>
+        </div>
+      </footer>
+    </main>
+  </div>
+  </div>
+  <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+  <script>
+    function showSnackbar(message) {
+      var sb = document.querySelector('#snackbar');
+      sb.MaterialSnackbar.queuedNotifications_ = [];
+      sb.MaterialSnackbar.active = false;
+      sb.MaterialSnackbar.showSnackbar({
+        'message': message
+      });
+    }
+    $('#form').on('submit', function(e) {
+      if (e.isDefaultPrevented()) return;
+      $('#pr').show();
+      $('#btn-send').prop('disabled', true);
+
+      $.ajax({
+        url: '/post',
+        method: 'POST',
+        data: $("#form").serialize()
+      }).done(function(r) {
+        showSnackbar(r);
+        $('#message').val('');
+      }).fail(function(r) {
+        showSnackbar('Wow.. Error..');
+      }).always(function() {
+        $('#btn-send').prop('disabled', false);
+        $('#pr').hide();
+      });
+      e.preventDefault();
+    });
+    $('input[name="team"]').one('change', function() {
+      $('#btn-send').prop('disabled', false);
+    });
+  </script>
+</body>
+
+</html>

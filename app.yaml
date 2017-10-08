@@ -1,0 +1,19 @@
+runtime: python27
+api_version: 1
+threadsafe: true
+
+handlers:
+- url: /static/(.*)
+  static_files: static/\1
+  upload: static/.*
+  secure: always
+  #expiration: "365d"
+
+- url: /admin.*
+  script: admin.app
+  secure: always
+  login: admin
+
+- url: /.*
+  script: main.app
+  secure: always

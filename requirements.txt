@@ -1,0 +1,4 @@
+Flask==0.12.2
+google-cloud-language==0.23.1
+google-cloud-bigquery==0.23.0
+
