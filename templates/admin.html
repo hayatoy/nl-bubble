@@ -1,5 +1,6 @@
 <!doctype html>
 <html>
+
 <head>
   <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="chrome=1">
@@ -26,6 +27,22 @@
   <script src='/static/box2d/Main.js'></script>
   <script src="https://www.gstatic.com/firebasejs/4.3.0/firebase.js"></script>
   <script>
+    var entityMap = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;',
+      '/': '&#x2F;',
+      '`': '&#x60;',
+      '=': '&#x3D;'
+    };
+
+    function escapeHtml(string) {
+      return String(string).replace(/[&<>"'`=\/]/g, function(s) {
+        return entityMap[s];
+      });
+    }
     // Initialize Firebase
     var config = {
       databaseURL: "https://{{ app_id }}.firebaseio.com"
@@ -37,8 +54,9 @@
       var bubble = snapshot.val();
       var s = bubble.message;
       s = s.length > 30 ? s.substr(0, 29) + '…' : s;
+      s = escapeHtml(s);
       if (bubble.score < 0.0) bubble.message = '!';
-      createBall(s, 10 + (bubble.score+1.0) * 60, bubble.team);
+      createBall(s, 10 + (bubble.score + 1.0) * 60, bubble.team);
       if (bodies.length > 100) {
         for (var i = 0; i < bodies.length - 100; i++) {
           removeOldBall();
